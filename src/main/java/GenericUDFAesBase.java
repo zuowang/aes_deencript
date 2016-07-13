@@ -122,6 +122,14 @@ public abstract class GenericUDFAesBase extends GenericUDF {
       }
     }
 
+
+    if (keyLength < 16) {
+      byte[] bytes = {'\0','\0','\0','\0','\0','\0','\0','\0',
+                      '\0','\0','\0','\0','\0','\0','\0','\0'};
+      for (int i = 0; i < keyLength; ++i) bytes[i] = key[i];
+      keyLength = 16;
+      key = bytes;
+    }
     if (key != null) {
       secretKey = getSecretKey(key, keyLength);
     }
@@ -159,6 +167,10 @@ public abstract class GenericUDFAesBase extends GenericUDF {
 
     if (input == null) {
       return null;
+    }
+
+    if (inputLength == 0) {
+      return new BytesWritable();
     }
 
     SecretKey secretKey;
